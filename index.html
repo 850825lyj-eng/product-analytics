@@ -334,52 +334,62 @@
 
   // ========== 链接解析 ==========
   function parseLink(url) {
-    if (!url || !url.trim()) return null;
-    url = url.trim();
-    let platform = '';
-    let name = '';
-    // 根据域名识别平台
-    if (url.includes('taobao.com') || url.includes('tmall.com')) platform = '淘宝';
-    else if (url.includes('pinduoduo.com') || url.includes('yangkeduo.com')) platform = '拼多多';
-    else if (url.includes('douyin.com')) platform = '抖店';
-    else if (url.includes('xiaohongshu.com')) platform = '小红书';
-    else if (url.includes('amazon.com')) platform = '亚马逊';
-    else return null; // 无法识别
+  if (!url || !url.trim()) return null;
+  url = url.trim();
+  let platform = '';
+  let extractedName = '';
+  
+  if (url.includes('taobao.com') || url.includes('tmall.com')) platform = '淘宝';
+  else if (url.includes('pinduoduo.com') || url.includes('yangkeduo.com')) platform = '拼多多';
+  else if (url.includes('douyin.com')) platform = '抖店';
+  else if (url.includes('xiaohongshu.com')) platform = '小红书';
+  else if (url.includes('amazon.com')) platform = '亚马逊';
+  else return null;
 
-    // 尝试从URL参数提取标题
-    try {
-      const urlObj = new URL(url);
-      const title = urlObj.searchParams.get('title') || urlObj.searchParams.get('goodsName') || urlObj.searchParams.get('name') || '';
-      if (title) name = decodeURIComponent(title).slice(0, 50);
-    } catch (e) {
-      // 链接不规范，忽略
-    }
-    return { platform, name };
-  }
+  // 尝试从URL参数提取标题（淘宝客/拼多多分享链接可能携带）
+  try {
+    const urlObj = new URL(url);
+    const title = urlObj.searchParams.get('title') || urlObj.searchParams.get('goodsName') || urlObj.searchParams.get('name') || '';
+    if (title) extractedName = decodeURIComponent(title).slice(0, 50);
+  } catch (e) {}
 
+  // 如果提取到真实标题，用真实标题；否则生成平台前缀
+  const nameToFill = extractedName || `[${platform}] `;
+  return { platform, name: nameToFill };
+}
   document.getElementById('addLink').addEventListener('input', function() {
-    const result = parseLink(this.value);
-    const hint = document.getElementById('linkHint');
-    const success = document.getElementById('linkSuccess');
-    if (result) {
-      hint.style.display = 'none';
-      success.style.display = 'block';
-      success.textContent = `✅ 已识别平台：${result.platform}${result.name ? '，标题：' + result.name : ''}`;
-      document.getElementById('addPlatform').value = result.platform;
-      if (result.name && !document.getElementById('addName').value) {
-        document.getElementById('addName').value = result.name;
+  const result = parseLink(this.value);
+  const hint = document.getElementById('linkHint');
+  const success = document.getElementById('linkSuccess');
+  const nameInput = document.getElementById('addName');
+  
+  if (result) {
+    hint.style.display = 'none';
+    success.style.display = 'block';
+    success.textContent = `✅ 已识别平台：${result.platform}，商品名已自动填入前缀，请补充完整`;
+    success.style.color = 'var(--success)'; // 恢复绿色
+    
+    document.getElementById('addPlatform').value = result.platform;
+    
+    // 自动填入名称（如果已有真实标题则直接填好；否则填前缀）
+    if (!nameInput.value || nameInput.value.startsWith('[')) {
+      nameInput.value = result.name;
+      // 如果只是前缀（没有提取到真实标题），把光标定位到前缀后面
+      if (result.name.endsWith('] ')) {
+        nameInput.setSelectionRange(result.name.length, result.name.length);
+        nameInput.focus();
       }
-    } else if (this.value.trim()) {
-      hint.style.display = 'none';
-      success.style.display = 'block';
-      success.textContent = '⚠️ 未能识别该链接，请手动填写信息';
-      success.style.color = 'var(--warning)';
-    } else {
-      hint.style.display = 'block';
-      success.style.display = 'none';
     }
-  });
-
+  } else if (this.value.trim()) {
+    hint.style.display = 'none';
+    success.style.display = 'block';
+    success.textContent = '⚠️ 未能识别该链接，请手动填写信息';
+    success.style.color = 'var(--warning)';
+  } else {
+    hint.style.display = 'block';
+    success.style.display = 'none';
+  }
+});
   // ========== 工具函数 ==========
   function calcProfit(cost, price, shipping) { return price - cost - (shipping || 0); }
   function calcMargin(profit, price) { return price > 0 ? ((profit / price) * 100) : 0; }
