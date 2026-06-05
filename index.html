@@ -156,36 +156,64 @@
       border: 1px solid var(--glass-border); border-radius: var(--radius); padding: 24px;
       width: 90%; max-width: 560px; box-shadow: var(--glass-shadow-lg); display: flex; flex-direction: column; gap: 14px;
       max-height: 85vh; overflow-y: auto;
+      /* ===== 关键修复：所有内容强制换行 ===== */
+      word-break: break-word;
+      overflow-wrap: break-word;
     }
     .modal h3 { font-size: 1.1rem; font-weight: 700; }
-    .modal-tabs { display: flex; gap: 4px; background: var(--glass-bg-2); border-radius: 20px; padding: 2px; border: 1px solid var(--glass-border); }
+    .modal-tabs { display: flex; gap: 4px; background: var(--glass-bg-2); border-radius: 20px; padding: 2px; border: 1px solid var(--glass-border); flex-shrink: 0; }
     .modal-tab {
       flex: 1; padding: 6px 12px; border-radius: 18px; border: none; background: transparent;
       font-size: 0.8rem; font-weight: 600; cursor: pointer; color: var(--text-secondary); transition: 0.2s;
+      white-space: nowrap;
     }
     .modal-tab.active { background: var(--accent); color: white; }
     .form-row { display: flex; gap: 10px; flex-wrap: wrap; }
     .form-row input, .form-row select, .form-row textarea {
-      flex: 1; min-width: 80px; padding: 10px 12px; border-radius: var(--radius-xs);
+      flex: 1; min-width: 0; /* 防止flex子元素撑破容器 */ padding: 10px 12px; border-radius: var(--radius-xs);
       border: 1px solid var(--glass-border); background: var(--glass-bg-2); color: var(--text-primary);
       font-size: 0.85rem; font-family: inherit; transition: 0.2s;
     }
-    .form-row textarea { min-height: 120px; resize: vertical; flex: 2; }
+    .form-row textarea { min-height: 100px; resize: vertical; flex: 2; }
     .form-row input:focus, .form-row select:focus, .form-row textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(124,92,255,0.1); }
+
+    /* ===== 提示文字修复 ===== */
     .link-hint {
-      font-size: 0.75rem; color: var(--text-muted); margin-top: -6px; margin-bottom: 8px;
-      line-height: 1.5; word-break: break-word;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin: -4px 0 6px 0;
+      line-height: 1.6;
+      white-space: normal;
+      word-break: break-word;
+      overflow-wrap: break-word;
+      max-width: 100%;
     }
-    .link-success { font-size: 0.75rem; margin-top: -8px; display: none; }
+    .link-success {
+      font-size: 0.75rem;
+      margin: -4px 0 6px 0;
+      line-height: 1.6;
+      white-space: normal;
+      word-break: break-word;
+      overflow-wrap: break-word;
+      display: none;
+    }
     .batch-hint {
-      font-size: 0.75rem; color: var(--text-muted); margin-top: -4px;
-      line-height: 1.8; word-break: break-word; white-space: normal;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin: -4px 0 6px 0;
+      line-height: 1.8;
+      white-space: normal;
+      word-break: break-word;
+      overflow-wrap: break-word;
+      max-width: 100%;
     }
+    .small-text { font-size: 0.8rem; color: var(--text-muted); }
 
     .toast {
       position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
       background: rgba(124,92,255,0.92); backdrop-filter: blur(12px); color: white; padding: 12px 24px;
       border-radius: 30px; font-weight: 600; z-index: 200; opacity: 0; transition: opacity 0.3s;
+      white-space: nowrap;
     }
     .toast.show { opacity: 1; }
     .footer { text-align: center; margin-top: 40px; padding: 20px 0; color: var(--text-muted); font-size: 0.8rem; }
@@ -275,7 +303,6 @@
   </div>
 </div>
 
-<!-- 添加商品弹窗 -->
 <div class="modal-overlay" id="addModal">
   <div class="modal" id="addModalInner">
     <h3>➕ 添加商品</h3>
@@ -286,7 +313,7 @@
 
     <div id="modeSingle">
       <div class="form-row">
-        <input type="text" id="addLink" placeholder="📎 粘贴商品链接（选填，自动识别平台）" style="flex:2;">
+        <input type="text" id="addLink" placeholder="粘贴商品链接（选填）" style="flex:2;">
       </div>
       <p class="link-hint" id="linkHint">支持淘宝 / 拼多多 / 抖店 / 小红书 / 亚马逊链接</p>
       <p class="link-success" id="linkSuccess"></p>
@@ -358,7 +385,6 @@
   let currentView = 'all';
   let currentModalMode = 'single';
 
-  // 导航切换
   document.getElementById('navTabs').addEventListener('click', (e) => {
     const tab = e.target.closest('.nav-tab');
     if (!tab) return;
@@ -368,7 +394,6 @@
     render();
   });
 
-  // 弹窗模式切换
   document.getElementById('modalTabs').addEventListener('click', (e) => {
     const tab = e.target.closest('.modal-tab');
     if (!tab) return;
@@ -380,7 +405,6 @@
     document.getElementById('confirmAddBtn').textContent = currentModalMode === 'batch' ? '✅ 批量添加' : '✅ 确认添加';
   });
 
-  // 快捷键 Ctrl+Enter
   document.getElementById('addModalInner').addEventListener('keydown', function(e) {
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
       e.preventDefault();
@@ -451,7 +475,6 @@
     setTimeout(() => t.classList.remove('show'), 2500);
   }
 
-  // ========== 弹窗 ==========
   function openAddModal() {
     document.getElementById('addModal').classList.add('active');
     currentModalMode = 'single';
@@ -539,7 +562,6 @@
     showToast('已删除');
   }
 
-  // ========== 渲染 ==========
   function render() {
     const data = getData();
     const filtered = currentView === 'low'
@@ -629,7 +651,6 @@
     }
   }
 
-  // ========== CSV导入导出 ==========
   function importCSV() {
     const input = document.createElement('input');
     input.type = 'file'; input.accept = '.csv';
