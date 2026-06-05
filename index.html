@@ -145,7 +145,6 @@
     }
     .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
 
-    /* 弹窗 */
     .modal-overlay {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.3);
       display: flex; align-items: center; justify-content: center; z-index: 100;
@@ -173,9 +172,15 @@
     }
     .form-row textarea { min-height: 120px; resize: vertical; flex: 2; }
     .form-row input:focus, .form-row select:focus, .form-row textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(124,92,255,0.1); }
-    .link-hint { font-size: 0.75rem; color: var(--text-muted); margin-top: -8px; }
+    .link-hint {
+      font-size: 0.75rem; color: var(--text-muted); margin-top: -6px; margin-bottom: 8px;
+      line-height: 1.5; word-break: break-word;
+    }
     .link-success { font-size: 0.75rem; margin-top: -8px; display: none; }
-    .batch-hint { font-size: 0.75rem; color: var(--text-muted); margin-top: -8px; line-height: 1.6; }
+    .batch-hint {
+      font-size: 0.75rem; color: var(--text-muted); margin-top: -4px;
+      line-height: 1.8; word-break: break-word; white-space: normal;
+    }
 
     .toast {
       position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
@@ -270,22 +275,20 @@
   </div>
 </div>
 
-<!-- 添加商品弹窗（单个/批量双模式） -->
+<!-- 添加商品弹窗 -->
 <div class="modal-overlay" id="addModal">
   <div class="modal" id="addModalInner">
     <h3>➕ 添加商品</h3>
-    <!-- 模式切换标签 -->
     <div class="modal-tabs" id="modalTabs">
       <button class="modal-tab active" data-mode="single">📝 单个添加</button>
       <button class="modal-tab" data-mode="batch">📋 批量导入</button>
     </div>
 
-    <!-- 单个添加模式 -->
     <div id="modeSingle">
       <div class="form-row">
         <input type="text" id="addLink" placeholder="📎 粘贴商品链接（选填，自动识别平台）" style="flex:2;">
       </div>
-      <p class="link-hint" id="linkHint">支持淘宝/拼多多/抖店/小红书/亚马逊链接</p>
+      <p class="link-hint" id="linkHint">支持淘宝 / 拼多多 / 抖店 / 小红书 / 亚马逊链接</p>
       <p class="link-success" id="linkSuccess"></p>
       <div class="form-row">
         <input type="text" id="addName" placeholder="商品名称">
@@ -307,14 +310,14 @@
       </div>
     </div>
 
-    <!-- 批量导入模式 -->
     <div id="modeBatch" style="display:none;">
       <div class="form-row">
-        <textarea id="batchInput" placeholder="每行一个商品，格式：&#10;商品名,成本,售价,运费,销量,平台&#10;&#10;示例：&#10;夏季连衣裙,45,129,5,320,淘宝&#10;防晒帽,8,19.9,3,850,拼多多&#10;运动鞋,65,159,8,120,抖店&#10;&#10;注：运费和销量可省略，平台可省略（默认淘宝）"></textarea>
+        <textarea id="batchInput" placeholder="每行一个商品，格式：&#10;商品名,成本,售价,运费,销量,平台&#10;&#10;示例：&#10;夏季连衣裙,45,129,5,320,淘宝&#10;防晒帽,8,19.9,3,850,拼多多&#10;运动鞋,65,159,8,120,抖店"></textarea>
       </div>
       <p class="batch-hint">
-        💡 格式：<strong>商品名,成本,售价,运费,销量,平台</strong><br>
-        运费和销量可省略（默认0），平台可省略（默认淘宝）
+        💡 每行一个商品，格式：<strong>商品名,成本,售价,运费,销量,平台</strong><br>
+        示例：<em>夏季连衣裙,45,129,5,320,淘宝</em><br>
+        运费和销量可省略（默认 0），平台可省略（默认淘宝）
       </p>
     </div>
 
@@ -414,7 +417,7 @@
     if (result) {
       hint.style.display = 'none';
       success.style.display = 'block';
-      success.textContent = `✅ 已识别平台：${result.platform}，商品名已自动填入前缀`;
+      success.textContent = `✅ 已识别平台：${result.platform}`;
       success.style.color = 'var(--success)';
       document.getElementById('addPlatform').value = result.platform;
       if (!nameInput.value || nameInput.value.startsWith('[')) {
@@ -451,7 +454,6 @@
   // ========== 弹窗 ==========
   function openAddModal() {
     document.getElementById('addModal').classList.add('active');
-    // 重置为单个添加模式
     currentModalMode = 'single';
     document.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
     document.querySelector('.modal-tab[data-mode="single"]').classList.add('active');
@@ -470,7 +472,6 @@
     document.getElementById('linkHint').style.display = 'block';
     document.getElementById('linkSuccess').style.display = 'none';
     document.getElementById('batchInput').value = '';
-    // 恢复默认值
     const prefs = getPrefs();
     document.getElementById('addPlatform').value = prefs.platform || '淘宝';
     document.getElementById('addShipping').value = prefs.shipping !== undefined ? prefs.shipping : '0';
@@ -498,7 +499,6 @@
     const data = getData();
     data.push({ id: Date.now(), name, platform, cost, price, shipping, sales });
     saveData(data);
-    // 保存默认值
     savePrefs({ platform, shipping });
     closeModal('addModal');
     render();
