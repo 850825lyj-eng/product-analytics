@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
   <title>修修图·选品罗盘 | 电商利润分析工具</title>
-  <meta name="description" content="修修图·选品罗盘，填入成本售价自动算毛利/ROI，粘贴商品链接自动识别平台，标注滞销品，跨平台对比利润。纯前端零上传。">
+  <meta name="description" content="修修图·选品罗盘，批量导入商品数据，自动算毛利/ROI，标注滞销品，跨平台对比利润。纯前端零上传。">
   <style>
     :root {
       --bg-gradient: linear-gradient(135deg, #f5f0ff 0%, #f0f5ff 30%, #fdf8f5 60%, #f0fdfc 100%);
@@ -12,7 +12,6 @@
       --glass-bg-2: rgba(255, 255, 255, 0.35);
       --glass-bg-3: rgba(255, 255, 255, 0.22);
       --glass-border: rgba(255, 255, 255, 0.75);
-      --glass-border-sub: rgba(124, 92, 255, 0.15);
       --glass-shadow: 0 4px 24px rgba(124, 92, 255, 0.06), 0 1px 3px rgba(0,0,0,0.03);
       --glass-shadow-lg: 0 12px 40px rgba(124, 92, 255, 0.10), 0 2px 8px rgba(0,0,0,0.04);
       --text-primary: #1a1a2e;
@@ -25,7 +24,6 @@
       --radius-sm: 12px;
       --radius-xs: 8px;
       --blur: 32px;
-      --blur-light: 16px;
       --danger: #ef4444;
       --warning: #f59e0b;
       --success: #10b981;
@@ -36,7 +34,6 @@
       --glass-bg-2: rgba(22, 20, 40, 0.5);
       --glass-bg-3: rgba(22, 20, 40, 0.3);
       --glass-border: rgba(255, 255, 255, 0.08);
-      --glass-border-sub: rgba(124, 92, 255, 0.25);
       --glass-shadow: 0 4px 24px rgba(0,0,0,0.3), 0 1px 3px rgba(0,0,0,0.2);
       --glass-shadow-lg: 0 12px 40px rgba(0,0,0,0.4), 0 2px 8px rgba(0,0,0,0.3);
       --text-primary: #f0eefc;
@@ -65,7 +62,7 @@
       background: var(--accent-gradient); display: flex; align-items: center; justify-content: center;
       color: white; font-size: 1rem; box-shadow: 0 4px 14px rgba(124,92,255,0.35);
     }
-    .nav-tabs { display: flex; gap: 4px; background: var(--glass-bg-2); backdrop-filter: blur(var(--blur-light)); border-radius: 28px; padding: 3px; border: 1px solid var(--glass-border); }
+    .nav-tabs { display: flex; gap: 4px; background: var(--glass-bg-2); backdrop-filter: blur(16px); border-radius: 28px; padding: 3px; border: 1px solid var(--glass-border); }
     .nav-tab {
       padding: 7px 16px; border-radius: 25px; border: none; background: transparent;
       font-size: 0.82rem; font-weight: 600; cursor: pointer; color: var(--text-secondary); transition: 0.2s; white-space: nowrap;
@@ -74,7 +71,7 @@
     .nav-tab:hover:not(.active) { color: var(--accent); }
     .theme-btn {
       display: flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 25px;
-      border: 1px solid var(--glass-border); background: var(--glass-bg-2); backdrop-filter: blur(var(--blur-light));
+      border: 1px solid var(--glass-border); background: var(--glass-bg-2); backdrop-filter: blur(16px);
       cursor: pointer; font-size: 0.82rem; font-weight: 600; color: var(--text-secondary); transition: 0.2s;
     }
     .theme-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(124,92,255,0.08); }
@@ -138,7 +135,7 @@
     .btn-group { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
     .btn-outline {
       padding: 10px 20px; border-radius: 25px; font-size: 0.85rem; font-weight: 600; cursor: pointer;
-      background: var(--glass-bg-2); backdrop-filter: blur(var(--blur-light)); border: 1.5px solid var(--accent);
+      background: var(--glass-bg-2); backdrop-filter: blur(16px); border: 1.5px solid var(--accent);
       color: var(--accent); display: inline-flex; align-items: center; gap: 6px; transition: 0.2s;
     }
     .btn-outline:hover { background: var(--accent); color: white; box-shadow: 0 6px 20px rgba(124,92,255,0.3); }
@@ -148,6 +145,7 @@
     }
     .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
 
+    /* 弹窗 */
     .modal-overlay {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.3);
       display: flex; align-items: center; justify-content: center; z-index: 100;
@@ -157,18 +155,27 @@
     .modal {
       background: var(--glass-bg); backdrop-filter: blur(var(--blur)); -webkit-backdrop-filter: blur(var(--blur));
       border: 1px solid var(--glass-border); border-radius: var(--radius); padding: 24px;
-      width: 90%; max-width: 520px; box-shadow: var(--glass-shadow-lg); display: flex; flex-direction: column; gap: 14px;
+      width: 90%; max-width: 560px; box-shadow: var(--glass-shadow-lg); display: flex; flex-direction: column; gap: 14px;
+      max-height: 85vh; overflow-y: auto;
     }
     .modal h3 { font-size: 1.1rem; font-weight: 700; }
+    .modal-tabs { display: flex; gap: 4px; background: var(--glass-bg-2); border-radius: 20px; padding: 2px; border: 1px solid var(--glass-border); }
+    .modal-tab {
+      flex: 1; padding: 6px 12px; border-radius: 18px; border: none; background: transparent;
+      font-size: 0.8rem; font-weight: 600; cursor: pointer; color: var(--text-secondary); transition: 0.2s;
+    }
+    .modal-tab.active { background: var(--accent); color: white; }
     .form-row { display: flex; gap: 10px; flex-wrap: wrap; }
-    .form-row input, .form-row select {
+    .form-row input, .form-row select, .form-row textarea {
       flex: 1; min-width: 80px; padding: 10px 12px; border-radius: var(--radius-xs);
       border: 1px solid var(--glass-border); background: var(--glass-bg-2); color: var(--text-primary);
       font-size: 0.85rem; font-family: inherit; transition: 0.2s;
     }
-    .form-row input:focus, .form-row select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(124,92,255,0.1); }
+    .form-row textarea { min-height: 120px; resize: vertical; flex: 2; }
+    .form-row input:focus, .form-row select:focus, .form-row textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(124,92,255,0.1); }
     .link-hint { font-size: 0.75rem; color: var(--text-muted); margin-top: -8px; }
-    .link-success { color: var(--success); font-size: 0.75rem; margin-top: -8px; display: none; }
+    .link-success { font-size: 0.75rem; margin-top: -8px; display: none; }
+    .batch-hint { font-size: 0.75rem; color: var(--text-muted); margin-top: -8px; line-height: 1.6; }
 
     .toast {
       position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
@@ -183,10 +190,9 @@
 <div class="container">
   <nav class="navbar">
     <div class="brand">
-  <img src="https://raw.githubusercontent.com/850825lyj-eng/image-toolkit-sepia/main/Gemini_Generated_Image_8cnagk8cnagk8cna.png"
-       alt="修修图" style="width:34px; height:34px; border-radius:8px; object-fit:cover;">
-  <span>修修图<span style="background:var(--accent-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">·选品罗盘</span></span>
-</div>
+      <div class="brand-icon">📊</div>
+      <span>修修图<span style="background:var(--accent-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">·选品罗盘</span></span>
+    </div>
     <div class="nav-tabs" id="navTabs">
       <button class="nav-tab active" data-view="all">📋 全部商品</button>
       <button class="nav-tab" data-view="low">🚩 滞销预警</button>
@@ -264,35 +270,56 @@
   </div>
 </div>
 
-<!-- 添加商品弹窗（新增链接粘贴） -->
+<!-- 添加商品弹窗（单个/批量双模式） -->
 <div class="modal-overlay" id="addModal">
-  <div class="modal">
+  <div class="modal" id="addModalInner">
     <h3>➕ 添加商品</h3>
-    <div class="form-row">
-      <input type="text" id="addLink" placeholder="📎 粘贴商品链接（选填，自动识别平台）" style="flex:2;">
+    <!-- 模式切换标签 -->
+    <div class="modal-tabs" id="modalTabs">
+      <button class="modal-tab active" data-mode="single">📝 单个添加</button>
+      <button class="modal-tab" data-mode="batch">📋 批量导入</button>
     </div>
-    <p class="link-hint" id="linkHint">支持淘宝/拼多多/抖店/小红书/亚马逊链接</p>
-    <p class="link-success" id="linkSuccess"></p>
-    <div class="form-row">
-      <input type="text" id="addName" placeholder="商品名称">
-      <select id="addPlatform">
-        <option value="淘宝">淘宝</option>
-        <option value="拼多多">拼多多</option>
-        <option value="抖店">抖店</option>
-        <option value="小红书">小红书</option>
-        <option value="亚马逊">亚马逊</option>
-      </select>
+
+    <!-- 单个添加模式 -->
+    <div id="modeSingle">
+      <div class="form-row">
+        <input type="text" id="addLink" placeholder="📎 粘贴商品链接（选填，自动识别平台）" style="flex:2;">
+      </div>
+      <p class="link-hint" id="linkHint">支持淘宝/拼多多/抖店/小红书/亚马逊链接</p>
+      <p class="link-success" id="linkSuccess"></p>
+      <div class="form-row">
+        <input type="text" id="addName" placeholder="商品名称">
+        <select id="addPlatform">
+          <option value="淘宝">淘宝</option>
+          <option value="拼多多">拼多多</option>
+          <option value="抖店">抖店</option>
+          <option value="小红书">小红书</option>
+          <option value="亚马逊">亚马逊</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <input type="number" id="addCost" placeholder="成本(¥)" step="0.01" min="0">
+        <input type="number" id="addPrice" placeholder="售价(¥)" step="0.01" min="0">
+        <input type="number" id="addShipping" placeholder="运费(¥)" step="0.01" min="0" value="0">
+      </div>
+      <div class="form-row">
+        <input type="number" id="addSales" placeholder="月销量" min="0" value="0">
+      </div>
     </div>
-    <div class="form-row">
-      <input type="number" id="addCost" placeholder="成本(¥)" step="0.01" min="0">
-      <input type="number" id="addPrice" placeholder="售价(¥)" step="0.01" min="0">
-      <input type="number" id="addShipping" placeholder="运费(¥)" step="0.01" min="0" value="0">
+
+    <!-- 批量导入模式 -->
+    <div id="modeBatch" style="display:none;">
+      <div class="form-row">
+        <textarea id="batchInput" placeholder="每行一个商品，格式：&#10;商品名,成本,售价,运费,销量,平台&#10;&#10;示例：&#10;夏季连衣裙,45,129,5,320,淘宝&#10;防晒帽,8,19.9,3,850,拼多多&#10;运动鞋,65,159,8,120,抖店&#10;&#10;注：运费和销量可省略，平台可省略（默认淘宝）"></textarea>
+      </div>
+      <p class="batch-hint">
+        💡 格式：<strong>商品名,成本,售价,运费,销量,平台</strong><br>
+        运费和销量可省略（默认0），平台可省略（默认淘宝）
+      </p>
     </div>
-    <div class="form-row">
-      <input type="number" id="addSales" placeholder="月销量" min="0" value="0">
-    </div>
+
     <div class="btn-group">
-      <button class="btn-outline" onclick="addProduct()">✅ 确认添加</button>
+      <button class="btn-outline" id="confirmAddBtn" onclick="confirmAdd()">✅ 确认添加</button>
       <button class="btn-ghost" onclick="closeModal('addModal')">取消</button>
     </div>
   </div>
@@ -319,10 +346,16 @@
 
   // ========== 数据管理 ==========
   const DATA_KEY = 'product_analytics_data';
+  const PREFS_KEY = 'product_analytics_prefs';
   function getData() { try { return JSON.parse(localStorage.getItem(DATA_KEY)) || []; } catch { return []; } }
   function saveData(data) { localStorage.setItem(DATA_KEY, JSON.stringify(data)); }
+  function getPrefs() { try { return JSON.parse(localStorage.getItem(PREFS_KEY)) || {}; } catch { return {}; } }
+  function savePrefs(prefs) { localStorage.setItem(PREFS_KEY, JSON.stringify(prefs)); }
 
   let currentView = 'all';
+  let currentModalMode = 'single';
+
+  // 导航切换
   document.getElementById('navTabs').addEventListener('click', (e) => {
     const tab = e.target.closest('.nav-tab');
     if (!tab) return;
@@ -332,64 +365,76 @@
     render();
   });
 
+  // 弹窗模式切换
+  document.getElementById('modalTabs').addEventListener('click', (e) => {
+    const tab = e.target.closest('.modal-tab');
+    if (!tab) return;
+    document.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    currentModalMode = tab.dataset.mode;
+    document.getElementById('modeSingle').style.display = currentModalMode === 'single' ? 'block' : 'none';
+    document.getElementById('modeBatch').style.display = currentModalMode === 'batch' ? 'block' : 'none';
+    document.getElementById('confirmAddBtn').textContent = currentModalMode === 'batch' ? '✅ 批量添加' : '✅ 确认添加';
+  });
+
+  // 快捷键 Ctrl+Enter
+  document.getElementById('addModalInner').addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      e.preventDefault();
+      confirmAdd();
+    }
+  });
+
   // ========== 链接解析 ==========
   function parseLink(url) {
-  if (!url || !url.trim()) return null;
-  url = url.trim();
-  let platform = '';
-  let extractedName = '';
-  
-  if (url.includes('taobao.com') || url.includes('tmall.com')) platform = '淘宝';
-  else if (url.includes('pinduoduo.com') || url.includes('yangkeduo.com')) platform = '拼多多';
-  else if (url.includes('douyin.com')) platform = '抖店';
-  else if (url.includes('xiaohongshu.com')) platform = '小红书';
-  else if (url.includes('amazon.com')) platform = '亚马逊';
-  else return null;
-
-  // 尝试从URL参数提取标题（淘宝客/拼多多分享链接可能携带）
-  try {
-    const urlObj = new URL(url);
-    const title = urlObj.searchParams.get('title') || urlObj.searchParams.get('goodsName') || urlObj.searchParams.get('name') || '';
-    if (title) extractedName = decodeURIComponent(title).slice(0, 50);
-  } catch (e) {}
-
-  // 如果提取到真实标题，用真实标题；否则生成平台前缀
-  const nameToFill = extractedName || `[${platform}] `;
-  return { platform, name: nameToFill };
-}
-  document.getElementById('addLink').addEventListener('input', function() {
-  const result = parseLink(this.value);
-  const hint = document.getElementById('linkHint');
-  const success = document.getElementById('linkSuccess');
-  const nameInput = document.getElementById('addName');
-  
-  if (result) {
-    hint.style.display = 'none';
-    success.style.display = 'block';
-    success.textContent = `✅ 已识别平台：${result.platform}，商品名已自动填入前缀，请补充完整`;
-    success.style.color = 'var(--success)'; // 恢复绿色
-    
-    document.getElementById('addPlatform').value = result.platform;
-    
-    // 自动填入名称（如果已有真实标题则直接填好；否则填前缀）
-    if (!nameInput.value || nameInput.value.startsWith('[')) {
-      nameInput.value = result.name;
-      // 如果只是前缀（没有提取到真实标题），把光标定位到前缀后面
-      if (result.name.endsWith('] ')) {
-        nameInput.setSelectionRange(result.name.length, result.name.length);
-        nameInput.focus();
-      }
-    }
-  } else if (this.value.trim()) {
-    hint.style.display = 'none';
-    success.style.display = 'block';
-    success.textContent = '⚠️ 未能识别该链接，请手动填写信息';
-    success.style.color = 'var(--warning)';
-  } else {
-    hint.style.display = 'block';
-    success.style.display = 'none';
+    if (!url || !url.trim()) return null;
+    url = url.trim();
+    let platform = '';
+    let extractedName = '';
+    if (url.includes('taobao.com') || url.includes('tmall.com')) platform = '淘宝';
+    else if (url.includes('pinduoduo.com') || url.includes('yangkeduo.com')) platform = '拼多多';
+    else if (url.includes('douyin.com')) platform = '抖店';
+    else if (url.includes('xiaohongshu.com')) platform = '小红书';
+    else if (url.includes('amazon.com')) platform = '亚马逊';
+    else return null;
+    try {
+      const urlObj = new URL(url);
+      const title = urlObj.searchParams.get('title') || urlObj.searchParams.get('goodsName') || '';
+      if (title) extractedName = decodeURIComponent(title).slice(0, 50);
+    } catch (e) {}
+    const nameToFill = extractedName || `[${platform}] `;
+    return { platform, name: nameToFill };
   }
-});
+
+  document.getElementById('addLink').addEventListener('input', function() {
+    const result = parseLink(this.value);
+    const hint = document.getElementById('linkHint');
+    const success = document.getElementById('linkSuccess');
+    const nameInput = document.getElementById('addName');
+    if (result) {
+      hint.style.display = 'none';
+      success.style.display = 'block';
+      success.textContent = `✅ 已识别平台：${result.platform}，商品名已自动填入前缀`;
+      success.style.color = 'var(--success)';
+      document.getElementById('addPlatform').value = result.platform;
+      if (!nameInput.value || nameInput.value.startsWith('[')) {
+        nameInput.value = result.name;
+        if (result.name.endsWith('] ')) {
+          nameInput.setSelectionRange(result.name.length, result.name.length);
+          nameInput.focus();
+        }
+      }
+    } else if (this.value.trim()) {
+      hint.style.display = 'none';
+      success.style.display = 'block';
+      success.textContent = '⚠️ 未能识别该链接，请手动填写信息';
+      success.style.color = 'var(--warning)';
+    } else {
+      hint.style.display = 'block';
+      success.style.display = 'none';
+    }
+  });
+
   // ========== 工具函数 ==========
   function calcProfit(cost, price, shipping) { return price - cost - (shipping || 0); }
   function calcMargin(profit, price) { return price > 0 ? ((profit / price) * 100) : 0; }
@@ -403,8 +448,16 @@
     setTimeout(() => t.classList.remove('show'), 2500);
   }
 
+  // ========== 弹窗 ==========
   function openAddModal() {
     document.getElementById('addModal').classList.add('active');
+    // 重置为单个添加模式
+    currentModalMode = 'single';
+    document.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector('.modal-tab[data-mode="single"]').classList.add('active');
+    document.getElementById('modeSingle').style.display = 'block';
+    document.getElementById('modeBatch').style.display = 'none';
+    document.getElementById('confirmAddBtn').textContent = '✅ 确认添加';
     clearForm();
   }
   function closeModal(id) { document.getElementById(id).classList.remove('active'); }
@@ -413,14 +466,25 @@
     document.getElementById('addName').value = '';
     document.getElementById('addCost').value = '';
     document.getElementById('addPrice').value = '';
-    document.getElementById('addShipping').value = '0';
     document.getElementById('addSales').value = '0';
-    document.getElementById('addPlatform').value = '淘宝';
     document.getElementById('linkHint').style.display = 'block';
     document.getElementById('linkSuccess').style.display = 'none';
+    document.getElementById('batchInput').value = '';
+    // 恢复默认值
+    const prefs = getPrefs();
+    document.getElementById('addPlatform').value = prefs.platform || '淘宝';
+    document.getElementById('addShipping').value = prefs.shipping !== undefined ? prefs.shipping : '0';
   }
 
-  function addProduct() {
+  function confirmAdd() {
+    if (currentModalMode === 'single') {
+      addSingleProduct();
+    } else {
+      addBatchProducts();
+    }
+  }
+
+  function addSingleProduct() {
     const name = document.getElementById('addName').value.trim();
     const platform = document.getElementById('addPlatform').value;
     const cost = parseFloat(document.getElementById('addCost').value);
@@ -434,9 +498,37 @@
     const data = getData();
     data.push({ id: Date.now(), name, platform, cost, price, shipping, sales });
     saveData(data);
+    // 保存默认值
+    savePrefs({ platform, shipping });
     closeModal('addModal');
     render();
     showToast('✅ 商品已添加');
+  }
+
+  function addBatchProducts() {
+    const raw = document.getElementById('batchInput').value.trim();
+    if (!raw) { showToast('请粘贴商品数据'); return; }
+    const lines = raw.split('\n').filter(l => l.trim());
+    const data = getData();
+    let added = 0;
+    lines.forEach(line => {
+      const cols = line.split(',').map(c => c.trim());
+      if (cols.length < 2) return;
+      const name = cols[0];
+      const cost = parseFloat(cols[1]);
+      const price = parseFloat(cols[2]);
+      if (!name || isNaN(cost) || isNaN(price)) return;
+      const shipping = parseFloat(cols[3]) || 0;
+      const sales = parseInt(cols[4]) || 0;
+      const platform = cols[5] || '淘宝';
+      data.push({ id: Date.now() + Math.random(), name, platform, cost, price, shipping, sales });
+      added++;
+    });
+    if (added === 0) { showToast('未识别到有效数据，请检查格式'); return; }
+    saveData(data);
+    closeModal('addModal');
+    render();
+    showToast(`✅ 成功导入 ${added} 条商品数据`);
   }
 
   function deleteProduct(id) {
@@ -447,6 +539,7 @@
     showToast('已删除');
   }
 
+  // ========== 渲染 ==========
   function render() {
     const data = getData();
     const filtered = currentView === 'low'
@@ -536,6 +629,7 @@
     }
   }
 
+  // ========== CSV导入导出 ==========
   function importCSV() {
     const input = document.createElement('input');
     input.type = 'file'; input.accept = '.csv';
@@ -546,25 +640,27 @@
       reader.onload = (ev) => {
         const lines = ev.target.result.split('\n').filter(l => l.trim());
         const data = getData();
+        let added = 0;
         lines.slice(1).forEach(line => {
           const cols = line.split(',');
-          if (cols.length >= 6) {
-            const cost = parseFloat(cols[2]), price = parseFloat(cols[3]);
+          if (cols.length >= 3) {
+            const cost = parseFloat(cols[1]), price = parseFloat(cols[2]);
             if (!isNaN(cost) && !isNaN(price)) {
               data.push({
                 id: Date.now() + Math.random(),
                 name: cols[0]?.trim() || '未知',
-                platform: cols[1]?.trim() || '淘宝',
                 cost, price,
-                shipping: parseFloat(cols[4]) || 0,
-                sales: parseInt(cols[5]) || 0,
+                shipping: parseFloat(cols[3]) || 0,
+                sales: parseInt(cols[4]) || 0,
+                platform: cols[5]?.trim() || '淘宝',
               });
+              added++;
             }
           }
         });
         saveData(data);
         render();
-        showToast(`成功导入 ${lines.length - 1} 条商品数据`);
+        showToast(`成功导入 ${added} 条商品数据`);
       };
       reader.readAsText(file);
     };
@@ -574,10 +670,10 @@
   function exportCSV() {
     const data = getData();
     if (data.length === 0) { showToast('暂无数据可导出'); return; }
-    let csv = '商品名称,平台,成本,售价,运费,月销量,毛利,毛利率,ROI\n';
+    let csv = '商品名称,成本,售价,运费,月销量,平台,毛利,毛利率,ROI\n';
     data.forEach(p => {
       const profit = calcProfit(p.cost, p.price, p.shipping);
-      csv += `${p.name},${p.platform},${p.cost},${p.price},${p.shipping},${p.sales},${fmt(profit)},${fmt(calcMargin(profit,p.price))}%,${fmt(calcROI(profit,p.cost))}\n`;
+      csv += `${p.name},${p.cost},${p.price},${p.shipping},${p.sales},${p.platform},${fmt(profit)},${fmt(calcMargin(profit,p.price))}%,${fmt(calcROI(profit,p.cost))}\n`;
     });
     const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
     const a = document.createElement('a');
