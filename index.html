@@ -156,7 +156,6 @@
       border: 1px solid var(--glass-border); border-radius: var(--radius); padding: 24px;
       width: 90%; max-width: 560px; box-shadow: var(--glass-shadow-lg); display: flex; flex-direction: column; gap: 14px;
       max-height: 85vh; overflow-y: auto;
-      /* ===== 关键修复：所有内容强制换行 ===== */
       word-break: break-word;
       overflow-wrap: break-word;
     }
@@ -170,18 +169,17 @@
     .modal-tab.active { background: var(--accent); color: white; }
     .form-row { display: flex; gap: 10px; flex-wrap: wrap; }
     .form-row input, .form-row select, .form-row textarea {
-      flex: 1; min-width: 0; /* 防止flex子元素撑破容器 */ padding: 10px 12px; border-radius: var(--radius-xs);
+      flex: 1; min-width: 0; padding: 10px 12px; border-radius: var(--radius-xs);
       border: 1px solid var(--glass-border); background: var(--glass-bg-2); color: var(--text-primary);
       font-size: 0.85rem; font-family: inherit; transition: 0.2s;
     }
     .form-row textarea { min-height: 100px; resize: vertical; flex: 2; }
     .form-row input:focus, .form-row select:focus, .form-row textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(124,92,255,0.1); }
 
-    /* ===== 提示文字修复 ===== */
+    /* === 关键调整：提示文字往下移 === */
     .link-hint {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      margin: -4px 0 6px 0;
+      font-size: 0.75rem; color: var(--text-muted);
+      margin: 8px 0 10px 0;
       line-height: 1.6;
       white-space: normal;
       word-break: break-word;
@@ -190,7 +188,7 @@
     }
     .link-success {
       font-size: 0.75rem;
-      margin: -4px 0 6px 0;
+      margin: 8px 0 10px 0;
       line-height: 1.6;
       white-space: normal;
       word-break: break-word;
@@ -198,16 +196,14 @@
       display: none;
     }
     .batch-hint {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      margin: -4px 0 6px 0;
+      font-size: 0.75rem; color: var(--text-muted);
+      margin: 8px 0 10px 0;
       line-height: 1.8;
       white-space: normal;
       word-break: break-word;
       overflow-wrap: break-word;
       max-width: 100%;
     }
-    .small-text { font-size: 0.8rem; color: var(--text-muted); }
 
     .toast {
       position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
