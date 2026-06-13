@@ -156,64 +156,36 @@
       border: 1px solid var(--glass-border); border-radius: var(--radius); padding: 24px;
       width: 90%; max-width: 560px; box-shadow: var(--glass-shadow-lg); display: flex; flex-direction: column; gap: 14px;
       max-height: 85vh; overflow-y: auto;
-      word-break: break-word; overflow-wrap: break-word;
     }
     .modal h3 { font-size: 1.1rem; font-weight: 700; }
-    .modal-tabs { display: flex; gap: 4px; background: var(--glass-bg-2); border-radius: 20px; padding: 2px; border: 1px solid var(--glass-border); flex-shrink: 0; }
+    .modal-tabs { display: flex; gap: 4px; background: var(--glass-bg-2); border-radius: 20px; padding: 2px; border: 1px solid var(--glass-border); }
     .modal-tab {
       flex: 1; padding: 6px 12px; border-radius: 18px; border: none; background: transparent;
       font-size: 0.8rem; font-weight: 600; cursor: pointer; color: var(--text-secondary); transition: 0.2s;
-      white-space: nowrap;
     }
     .modal-tab.active { background: var(--accent); color: white; }
     .form-row { display: flex; gap: 10px; flex-wrap: wrap; }
     .form-row input, .form-row select, .form-row textarea {
-      flex: 1; min-width: 0; padding: 10px 12px; border-radius: var(--radius-xs);
+      flex: 1; min-width: 80px; padding: 10px 12px; border-radius: var(--radius-xs);
       border: 1px solid var(--glass-border); background: var(--glass-bg-2); color: var(--text-primary);
       font-size: 0.85rem; font-family: inherit; transition: 0.2s;
     }
-    .form-row textarea { min-height: 100px; resize: vertical; flex: 2; }
+    .form-row textarea { min-height: 120px; resize: vertical; flex: 2; }
     .form-row input:focus, .form-row select:focus, .form-row textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(124,92,255,0.1); }
-
-    /* ========== 提示文字加粗加深 ========== */
     .link-hint {
-      font-size: 0.82rem; /* 增大 */
-      font-weight: 600;   /* 加粗 */
-      color: var(--text-secondary); /* 加深 */
-      margin: 8px 0 10px 0;
-      line-height: 1.6;
-      white-space: normal;
-      word-break: break-word;
-      overflow-wrap: break-word;
-      max-width: 100%;
+      font-size: 0.75rem; color: var(--text-muted); margin-top: -6px; margin-bottom: 8px;
+      line-height: 1.5; word-break: break-word;
     }
-    .link-success {
-      font-size: 0.82rem;
-      font-weight: 600;
-      margin: 8px 0 10px 0;
-      line-height: 1.6;
-      white-space: normal;
-      word-break: break-word;
-      overflow-wrap: break-word;
-      display: none;
-    }
+    .link-success { font-size: 0.75rem; margin-top: -8px; display: none; }
     .batch-hint {
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: var(--text-secondary);
-      margin: 8px 0 10px 0;
-      line-height: 1.8;
-      white-space: normal;
-      word-break: break-word;
-      overflow-wrap: break-word;
-      max-width: 100%;
+      font-size: 0.75rem; color: var(--text-muted); margin-top: -4px;
+      line-height: 1.8; word-break: break-word; white-space: normal;
     }
 
     .toast {
       position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
       background: rgba(124,92,255,0.92); backdrop-filter: blur(12px); color: white; padding: 12px 24px;
       border-radius: 30px; font-weight: 600; z-index: 200; opacity: 0; transition: opacity 0.3s;
-      white-space: nowrap;
     }
     .toast.show { opacity: 1; }
     .footer { text-align: center; margin-top: 40px; padding: 20px 0; color: var(--text-muted); font-size: 0.8rem; }
@@ -234,10 +206,22 @@
   </nav>
 
   <div class="bento-row">
-    <div class="stat-card"><div class="stat-label">商品总数</div><div class="stat-value accent" id="statTotal">0</div></div>
-    <div class="stat-card"><div class="stat-label">总预估利润</div><div class="stat-value success" id="statProfit">¥0</div></div>
-    <div class="stat-card"><div class="stat-label">平均毛利率</div><div class="stat-value" id="statMargin">0%</div></div>
-    <div class="stat-card"><div class="stat-label">滞销商品</div><div class="stat-value danger" id="statLow">0</div></div>
+    <div class="stat-card">
+      <div class="stat-label">商品总数</div>
+      <div class="stat-value accent" id="statTotal">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">总预估利润</div>
+      <div class="stat-value success" id="statProfit">¥0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">平均毛利率</div>
+      <div class="stat-value" id="statMargin">0%</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">滞销商品</div>
+      <div class="stat-value danger" id="statLow">0</div>
+    </div>
   </div>
 
   <div class="main-grid">
@@ -251,7 +235,21 @@
       </h3>
       <div class="table-wrapper">
         <table>
-          <thead><tr><th>商品名称</th><th>平台</th><th>成本(¥)</th><th>售价(¥)</th><th>运费(¥)</th><th>月销</th><th>毛利(¥)</th><th>毛利率</th><th>ROI</th><th>状态</th><th>操作</th></tr></thead>
+          <thead>
+            <tr>
+              <th>商品名称</th>
+              <th>平台</th>
+              <th>成本(¥)</th>
+              <th>售价(¥)</th>
+              <th>运费(¥)</th>
+              <th>月销</th>
+              <th>预估利润(¥)</th>
+              <th>毛利率</th>
+              <th>ROI</th>
+              <th>状态</th>
+              <th>操作</th>
+            </tr>
+          </thead>
           <tbody id="tableBody"></tbody>
         </table>
       </div>
@@ -272,7 +270,9 @@
     </div>
   </div>
 
-  <div class="footer"><p>© 2025 修修图 Xiuxiutu · 所有数据存储在浏览器本地，不上传任何数据。</p></div>
+  <div class="footer">
+    <p>© 2025 修修图 Xiuxiutu · 所有数据存储在浏览器本地，不上传任何数据。</p>
+  </div>
 </div>
 
 <!-- 添加商品弹窗 -->
@@ -285,23 +285,35 @@
     </div>
 
     <div id="modeSingle">
-      <div class="form-row"><input type="text" id="addLink" placeholder="粘贴商品链接（选填）" style="flex:2;"></div>
+      <div class="form-row">
+        <input type="text" id="addLink" placeholder="📎 粘贴商品链接（选填，自动识别平台）" style="flex:2;">
+      </div>
       <p class="link-hint" id="linkHint">支持淘宝 / 拼多多 / 抖店 / 小红书 / 亚马逊链接</p>
       <p class="link-success" id="linkSuccess"></p>
       <div class="form-row">
         <input type="text" id="addName" placeholder="商品名称">
-        <select id="addPlatform"><option value="淘宝">淘宝</option><option value="拼多多">拼多多</option><option value="抖店">抖店</option><option value="小红书">小红书</option><option value="亚马逊">亚马逊</option></select>
+        <select id="addPlatform">
+          <option value="淘宝">淘宝</option>
+          <option value="拼多多">拼多多</option>
+          <option value="抖店">抖店</option>
+          <option value="小红书">小红书</option>
+          <option value="亚马逊">亚马逊</option>
+        </select>
       </div>
       <div class="form-row">
         <input type="number" id="addCost" placeholder="成本(¥)" step="0.01" min="0">
         <input type="number" id="addPrice" placeholder="售价(¥)" step="0.01" min="0">
         <input type="number" id="addShipping" placeholder="运费(¥)" step="0.01" min="0" value="0">
       </div>
-      <div class="form-row"><input type="number" id="addSales" placeholder="月销量" min="0" value="0"></div>
+      <div class="form-row">
+        <input type="number" id="addSales" placeholder="月销量" min="0" value="0">
+      </div>
     </div>
 
     <div id="modeBatch" style="display:none;">
-      <div class="form-row"><textarea id="batchInput" placeholder="每行一个商品，格式：&#10;商品名,成本,售价,运费,销量,平台&#10;&#10;示例：&#10;夏季连衣裙,45,129,5,320,淘宝&#10;防晒帽,8,19.9,3,850,拼多多&#10;运动鞋,65,159,8,120,抖店"></textarea></div>
+      <div class="form-row">
+        <textarea id="batchInput" placeholder="每行一个商品，格式：&#10;商品名,成本,售价,运费,销量,平台&#10;&#10;示例：&#10;夏季连衣裙,45,129,5,320,淘宝&#10;防晒帽,8,19.9,3,850,拼多多&#10;运动鞋,65,159,8,120,抖店"></textarea>
+      </div>
       <p class="batch-hint">
         💡 每行一个商品，格式：<strong>商品名,成本,售价,运费,销量,平台</strong><br>
         示例：<em>夏季连衣裙,45,129,5,320,淘宝</em><br>
@@ -319,6 +331,7 @@
 <div class="toast" id="toast"></div>
 
 <script>
+  // ========== 主题 ==========
   (function() {
     const themeToggle = document.getElementById('themeToggle');
     const body = document.body;
@@ -334,6 +347,7 @@
     });
   })();
 
+  // ========== 数据管理 ==========
   const DATA_KEY = 'product_analytics_data';
   const PREFS_KEY = 'product_analytics_prefs';
   function getData() { try { return JSON.parse(localStorage.getItem(DATA_KEY)) || []; } catch { return []; } }
@@ -365,9 +379,13 @@
   });
 
   document.getElementById('addModalInner').addEventListener('keydown', function(e) {
-    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); confirmAdd(); }
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      e.preventDefault();
+      confirmAdd();
+    }
   });
 
+  // ========== 链接解析 ==========
   function parseLink(url) {
     if (!url || !url.trim()) return null;
     url = url.trim();
@@ -417,7 +435,9 @@
     }
   });
 
-  function calcProfit(cost, price, shipping) { return price - cost - (shipping || 0); }
+  // ========== 利润计算核心 ==========
+  function calcUnitProfit(cost, price, shipping) { return price - cost - (shipping || 0); }
+  function calcTotalProfit(cost, price, shipping, sales) { return calcUnitProfit(cost, price, shipping) * (sales || 0); }
   function calcMargin(profit, price) { return price > 0 ? ((profit / price) * 100) : 0; }
   function calcROI(profit, cost) { return cost > 0 ? (profit / cost) : 0; }
   function getStatus(roi) { if (roi >= 2) return 'success'; if (roi >= 1.5) return 'warning'; return 'danger'; }
@@ -455,8 +475,11 @@
   }
 
   function confirmAdd() {
-    if (currentModalMode === 'single') addSingleProduct();
-    else addBatchProducts();
+    if (currentModalMode === 'single') {
+      addSingleProduct();
+    } else {
+      addBatchProducts();
+    }
   }
 
   function addSingleProduct() {
@@ -466,7 +489,10 @@
     const price = parseFloat(document.getElementById('addPrice').value);
     const shipping = parseFloat(document.getElementById('addShipping').value) || 0;
     const sales = parseInt(document.getElementById('addSales').value) || 0;
-    if (!name || isNaN(cost) || isNaN(price) || cost < 0 || price < 0) { showToast('请填写完整的商品信息'); return; }
+    if (!name || isNaN(cost) || isNaN(price) || cost < 0 || price < 0) {
+      showToast('请填写完整的商品信息');
+      return;
+    }
     const data = getData();
     data.push({ id: Date.now(), name, platform, cost, price, shipping, sales });
     saveData(data);
@@ -510,27 +536,42 @@
     showToast('已删除');
   }
 
+  // ========== 渲染核心 ==========
   function render() {
     const data = getData();
-    const filtered = currentView === 'low' ? data.filter(p => calcROI(calcProfit(p.cost, p.price, p.shipping), p.cost) < 1.5) : data;
+    const filtered = currentView === 'low'
+      ? data.filter(p => calcROI(calcTotalProfit(p.cost, p.price, p.shipping, p.sales), p.cost) < 1.5)
+      : data;
 
     const tbody = document.getElementById('tableBody');
     const emptyHint = document.getElementById('emptyHint');
     tbody.innerHTML = '';
     emptyHint.style.display = data.length === 0 ? 'block' : 'none';
 
+    let totalProfitSum = 0;
+    let totalCostSum = 0;
+    let totalRevenueSum = 0;
+
     filtered.forEach(p => {
-      const profit = calcProfit(p.cost, p.price, p.shipping);
-      const margin = calcMargin(profit, p.price);
-      const roi = calcROI(profit, p.cost);
+      const unitProfit = calcUnitProfit(p.cost, p.price, p.shipping);
+      const totalProfit = unitProfit * p.sales;
+      const margin = calcMargin(unitProfit, p.price);
+      const roi = calcROI(unitProfit, p.cost);
       const status = getStatus(roi);
+      totalProfitSum += totalProfit;
+      totalCostSum += p.cost * p.sales;
+      totalRevenueSum += p.price * p.sales;
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td><strong>${p.name}</strong></td>
         <td><span class="badge-platform">${p.platform}</span></td>
-        <td>¥${fmt(p.cost)}</td><td>¥${fmt(p.price)}</td><td>¥${fmt(p.shipping)}</td><td>${p.sales}</td>
-        <td style="color:${profit>=0?'var(--success)':'var(--danger)'};">¥${fmt(profit)}</td>
-        <td>${fmt(margin)}%</td><td>${fmt(roi)}</td>
+        <td>¥${fmt(p.cost)}</td>
+        <td>¥${fmt(p.price)}</td>
+        <td>¥${fmt(p.shipping)}</td>
+        <td>${p.sales}</td>
+        <td style="color:${totalProfit>=0?'var(--success)':'var(--danger)'};">¥${fmt(totalProfit)}</td>
+        <td>${fmt(margin)}%</td>
+        <td>${fmt(roi)}</td>
         <td><span class="badge badge-${status}">${getStatusText(roi)}</span></td>
         <td><button class="btn-sm danger" onclick="deleteProduct(${p.id})">删除</button></td>
       `;
@@ -538,51 +579,63 @@
     });
 
     const total = data.length;
-    const totalProfit = data.reduce((s, p) => s + calcProfit(p.cost, p.price, p.shipping) * p.sales, 0);
-    const totalCost = data.reduce((s, p) => s + p.cost * p.sales, 0);
-    const totalRevenue = data.reduce((s, p) => s + p.price * p.sales, 0);
-    const avgMargin = total > 0 ? data.reduce((s, p) => s + calcMargin(calcProfit(p.cost, p.price, p.shipping), p.price), 0) / total : 0;
-    const lowCount = data.filter(p => calcROI(calcProfit(p.cost, p.price, p.shipping), p.cost) < 1.5).length;
+    const avgMargin = total > 0
+      ? data.reduce((s, p) => s + calcMargin(calcUnitProfit(p.cost, p.price, p.shipping), p.price), 0) / total
+      : 0;
+    const lowCount = data.filter(p => calcROI(calcUnitProfit(p.cost, p.price, p.shipping), p.cost) < 1.5).length;
 
     document.getElementById('statTotal').textContent = total;
-    document.getElementById('statProfit').textContent = '¥' + fmt(totalProfit);
+    document.getElementById('statProfit').textContent = '¥' + fmt(totalProfitSum);
     document.getElementById('statMargin').textContent = fmt(avgMargin) + '%';
     document.getElementById('statLow').textContent = lowCount;
 
     let best = null;
     data.forEach(p => {
-      const roi = calcROI(calcProfit(p.cost, p.price, p.shipping), p.cost);
+      const roi = calcROI(calcUnitProfit(p.cost, p.price, p.shipping), p.cost);
       if (!best || roi > best.roi) best = { name: p.name, roi };
     });
 
     document.getElementById('apTotal').textContent = total;
-    document.getElementById('apCost').textContent = '¥' + fmt(totalCost);
-    document.getElementById('apRevenue').textContent = '¥' + fmt(totalRevenue);
-    document.getElementById('apProfit').textContent = '¥' + fmt(totalProfit);
+    document.getElementById('apCost').textContent = '¥' + fmt(totalCostSum);
+    document.getElementById('apRevenue').textContent = '¥' + fmt(totalRevenueSum);
+    document.getElementById('apProfit').textContent = '¥' + fmt(totalProfitSum);
     document.getElementById('apBest').textContent = best ? `${best.name} (ROI ${fmt(best.roi)})` : '-';
 
+    // 平台利润分布
     const platformMap = {};
     data.forEach(p => {
-      const profit = calcProfit(p.cost, p.price, p.shipping) * p.sales;
+      const profit = calcTotalProfit(p.cost, p.price, p.shipping, p.sales);
       platformMap[p.platform] = (platformMap[p.platform] || 0) + profit;
     });
     const maxPlatformProfit = Math.max(1, ...Object.values(platformMap));
     const breakdown = document.getElementById('platformBreakdown');
     breakdown.innerHTML = '';
     Object.entries(platformMap).forEach(([plat, val]) => {
-      breakdown.innerHTML += `<div class="platform-bar"><span style="width:50px;text-align:right;">${plat}</span><div class="bar"><div class="bar-fill" style="width:${(val/maxPlatformProfit)*100}%;"></div></div><span style="width:60px;">¥${fmt(val)}</span></div>`;
+      breakdown.innerHTML += `
+        <div class="platform-bar">
+          <span style="width:50px; text-align:right;">${plat}</span>
+          <div class="bar"><div class="bar-fill" style="width:${(val/maxPlatformProfit)*100}%;"></div></div>
+          <span style="width:60px;">¥${fmt(val)}</span>
+        </div>`;
     });
-    if (Object.keys(platformMap).length === 0) breakdown.innerHTML = '<p style="font-size:0.8rem;color:var(--text-muted);">暂无数据</p>';
+    if (Object.keys(platformMap).length === 0) {
+      breakdown.innerHTML = '<p style="font-size:0.8rem; color:var(--text-muted);">暂无数据</p>';
+    }
 
-    const lowList = data.filter(p => calcROI(calcProfit(p.cost, p.price, p.shipping), p.cost) < 1.5);
+    // 滞销预警清单动态渲染
+    const lowList = data.filter(p => calcROI(calcUnitProfit(p.cost, p.price, p.shipping), p.cost) < 1.5);
     const lowDiv = document.getElementById('lowList');
     if (lowList.length === 0) {
-      lowDiv.innerHTML = '<p style="font-size:0.8rem;color:var(--text-muted);">暂无滞销商品 🎉</p>';
+      lowDiv.innerHTML = '<p style="font-size:0.8rem; color:var(--text-muted);">暂无滞销商品 🎉</p>';
     } else {
-      lowDiv.innerHTML = lowList.map(p => `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(239,68,68,0.1);"><span>🔴 ${p.name}</span><span style="color:var(--danger);">ROI ${fmt(calcROI(calcProfit(p.cost,p.price,p.shipping),p.cost))}</span></div>`).join('');
+      lowDiv.innerHTML = lowList.map(p => {
+        const roi = calcROI(calcUnitProfit(p.cost, p.price, p.shipping), p.cost);
+        return `<div style="display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid rgba(239,68,68,0.1);"><span>🔴 ${p.name}</span><span style="color:var(--danger);">ROI ${fmt(roi)}</span></div>`;
+      }).join('');
     }
   }
 
+  // ========== CSV导入导出 ==========
   function importCSV() {
     const input = document.createElement('input');
     input.type = 'file'; input.accept = '.csv';
@@ -599,12 +652,21 @@
           if (cols.length >= 3) {
             const cost = parseFloat(cols[1]), price = parseFloat(cols[2]);
             if (!isNaN(cost) && !isNaN(price)) {
-              data.push({ id: Date.now() + Math.random(), name: cols[0]?.trim() || '未知', cost, price, shipping: parseFloat(cols[3]) || 0, sales: parseInt(cols[4]) || 0, platform: cols[5]?.trim() || '淘宝' });
+              data.push({
+                id: Date.now() + Math.random(),
+                name: cols[0]?.trim() || '未知',
+                cost, price,
+                shipping: parseFloat(cols[3]) || 0,
+                sales: parseInt(cols[4]) || 0,
+                platform: cols[5]?.trim() || '淘宝',
+              });
               added++;
             }
           }
         });
-        saveData(data); render(); showToast(`成功导入 ${added} 条商品数据`);
+        saveData(data);
+        render();
+        showToast(`成功导入 ${added} 条商品数据`);
       };
       reader.readAsText(file);
     };
@@ -616,11 +678,14 @@
     if (data.length === 0) { showToast('暂无数据可导出'); return; }
     let csv = '商品名称,成本,售价,运费,月销量,平台,毛利,毛利率,ROI\n';
     data.forEach(p => {
-      const profit = calcProfit(p.cost, p.price, p.shipping);
-      csv += `${p.name},${p.cost},${p.price},${p.shipping},${p.sales},${p.platform},${fmt(profit)},${fmt(calcMargin(profit,p.price))}%,${fmt(calcROI(profit,p.cost))}\n`;
+      const profit = calcTotalProfit(p.cost, p.price, p.shipping, p.sales);
+      csv += `${p.name},${p.cost},${p.price},${p.shipping},${p.sales},${p.platform},${fmt(profit)},${fmt(calcMargin(calcUnitProfit(p.cost, p.price, p.shipping), p.price))}%,${fmt(calcROI(calcUnitProfit(p.cost, p.price, p.shipping), p.cost))}\n`;
     });
     const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = '选品数据_export.csv'; a.click();
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = '选品数据_export.csv';
+    a.click();
     showToast('导出成功');
   }
 
@@ -633,11 +698,46 @@
       { id: Date.now()+5, name: '蓝牙耳机', platform: '淘宝', cost: 28, price: 79, shipping: 4, sales: 56 },
       { id: Date.now()+6, name: '瑜伽垫', platform: '小红书', cost: 22, price: 59, shipping: 6, sales: 89 },
       { id: Date.now()+7, name: 'T恤男', platform: '抖店', cost: 18, price: 39.9, shipping: 3, sales: 430 },
-      { id: Date.now()+8, name: '数据线', platform: '拼多多', cost: 2.5, price: 8.8, shipping: 1.5, sales: 3600 }
+      { id: Date.now()+8, name: '数据线', platform: '拼多多', cost: 2.5, price: 8.8, shipping: 1.5, sales: 3600 },
     ];
-    saveData(demo); render(); showToast('已加载8条示例数据');
+    saveData(demo);
+    render();
+    showToast('已加载8条示例数据');
   }
 
+  // ========== 插件注入接口 ==========
+  window.XiuxiutuPluginInject = function(pluginData) {
+    if (!Array.isArray(pluginData)) {
+      showToast('数据格式错误，需要数组');
+      return;
+    }
+    const prefs = getPrefs();
+    const defaultShipping = prefs.shipping !== undefined ? prefs.shipping : 0;
+    const data = getData();
+    let imported = 0;
+    pluginData.forEach(item => {
+      if (!item.name || item.price == null) return; // 至少需要名称和售价
+      data.push({
+        id: Date.now() + Math.random(),
+        name: item.name,
+        platform: item.platform || '淘宝',
+        cost: 0, // 默认成本为0，提示用户补全
+        price: parseFloat(item.price) || 0,
+        shipping: item.shipping !== undefined ? parseFloat(item.shipping) : defaultShipping,
+        sales: parseInt(item.sales) || 0
+      });
+      imported++;
+    });
+    if (imported === 0) {
+      showToast('未发现有效商品数据');
+      return;
+    }
+    saveData(data);
+    render();
+    showToast(`📥 成功捕获插件投送的商品数据，请及时补全拿货成本！`);
+  };
+
+  // 初始渲染
   render();
 </script>
 </body>
