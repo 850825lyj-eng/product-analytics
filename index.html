@@ -166,11 +166,13 @@
     .modal-tab.active { background: var(--accent); color: white; }
     .form-row { display: flex; gap: 10px; flex-wrap: wrap; }
     .form-row input, .form-row select, .form-row textarea {
-      flex: 1; min-width: 80px; padding: 10px 12px; border-radius: var(--radius-xs);
+      flex: 1; min-width: 80px; padding: 12px 12px; border-radius: var(--radius-xs);
       border: 1px solid var(--glass-border); background: var(--glass-bg-2); color: var(--text-primary);
       font-size: 0.85rem; font-family: inherit; transition: 0.2s;
+      line-height: 1.5; /* 核心修复：垂直居中 */
+      display: flex; align-items: center; /* 辅助垂直居中 */
     }
-    .form-row textarea { min-height: 120px; resize: vertical; flex: 2; }
+    .form-row textarea { min-height: 100px; resize: vertical; flex: 2; max-height: 200px; } /* 限制最大高度 */
     .form-row input:focus, .form-row select:focus, .form-row textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(124,92,255,0.1); }
     .link-hint {
       font-size: 0.75rem; color: var(--text-muted); margin-top: -6px; margin-bottom: 8px;
@@ -178,9 +180,11 @@
     }
     .link-success { font-size: 0.75rem; margin-top: -8px; display: none; }
     .batch-hint {
-      font-size: 0.75rem; color: var(--text-muted); margin-top: -4px;
+      font-size: 0.75rem; color: var(--text-muted); margin-top: 8px; margin-bottom: 24px; /* 核心修复：下边距增大 */
       line-height: 1.8; word-break: break-word; white-space: normal;
     }
+    /* 确保批量导入底部按钮有独立间距 */
+    .modal .btn-group:last-of-type { margin-top: 0; }
 
     .toast {
       position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
@@ -540,7 +544,7 @@
   function render() {
     const data = getData();
     const filtered = currentView === 'low'
-      ? data.filter(p => calcROI(calcTotalProfit(p.cost, p.price, p.shipping, p.sales), p.cost) < 1.5)
+      ? data.filter(p => calcROI(calcUnitProfit(p.cost, p.price, p.shipping), p.cost) < 1.5)
       : data;
 
     const tbody = document.getElementById('tableBody');
@@ -716,12 +720,12 @@
     const data = getData();
     let imported = 0;
     pluginData.forEach(item => {
-      if (!item.name || item.price == null) return; // 至少需要名称和售价
+      if (!item.name || item.price == null) return;
       data.push({
         id: Date.now() + Math.random(),
         name: item.name,
         platform: item.platform || '淘宝',
-        cost: 0, // 默认成本为0，提示用户补全
+        cost: 0,
         price: parseFloat(item.price) || 0,
         shipping: item.shipping !== undefined ? parseFloat(item.shipping) : defaultShipping,
         sales: parseInt(item.sales) || 0
@@ -737,7 +741,6 @@
     showToast(`📥 成功捕获插件投送的商品数据，请及时补全拿货成本！`);
   };
 
-  // 初始渲染
   render();
 </script>
 </body>
