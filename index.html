@@ -174,10 +174,12 @@
     }
     .form-row textarea { min-height: 100px; resize: vertical; flex: 2; max-height: 200px; } /* 限制最大高度 */
     .form-row input:focus, .form-row select:focus, .form-row textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(124,92,255,0.1); }
-    .link-hint {
-      font-size: 0.75rem; color: var(--text-muted); margin-top: -6px; margin-bottom: 8px;
-      line-height: 1.5; word-break: break-word;
-    }
+    ..link-hint {
+  font-size: 0.75rem; color: var(--text-muted);
+  margin-top: 8px;   /* ← 原来是 -6px，改成 8px，彻底拉开 */
+  margin-bottom: 8px;
+  line-height: 1.5; word-break: break-word;
+}
     .link-success { font-size: 0.75rem; margin-top: -8px; display: none; }
     .batch-hint {
       font-size: 0.75rem; color: var(--text-muted); margin-top: 8px; margin-bottom: 24px; /* 核心修复：下边距增大 */
